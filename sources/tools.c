@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
 #include "lem_in.h"
 
 void	show_room(t_room *r)
@@ -64,29 +62,28 @@ void	print_paths(t_farm *f)
 	t_room	*r;
 	int		i;
 	t_room	*p;
-	int		j;
 
 	r = f->start;
 	i = 0;
+	if (r->spath)
+		ft_printf("start(%s)->end(%s)\n", f->start->name, r->spath->name);
 	while ((p = f->start->links[i]))
 	{
-		j = 0;
 		if (p->spath)
-			ft_printf("lenght: %d 	ants: %d\nstart(%s)->", r->links[i]->len, r->links[i]->ants, r->name);
-		while (p && p->spath)
 		{
-			ft_printf("%s->", p->name);
-			p = p->spath;
-			j = j + 1;
-			if (p->spath == f->start)
-				ft_printf("\nlenght: %d 	ants: %d\n", p->len, p->ants);
+			ft_printf("lenght: %d 	ants: %d\nstart(%s)->", r->links[i]->len, r->links[i]->ants, r->name);
+			while (p && p != f->end)
+			{
+				ft_printf("%s->", p->name);
+				p = p->spath;
+			}
+			if (p == f->end)
+				ft_printf("end(%s)\n", p->name);
+			else
+				ft_printf("ERROR\n");
 		}
-		if (j)
-			ft_printf("end(%s)\n\n", p->name);
 		i = i + 1;
 	}
-	if (r->spath)
-		ft_printf("start(%s)->end(%s)\n", f->start->name, r->spath);
 }
 
 /*
@@ -99,6 +96,8 @@ void	release(t_farm *f)
 
 	if (f->buf)
 		ft_memdel((void **)&f->buf);
+	if (f->map)
+		ft_memdel((void **)&f->map);
 	while (f && f->head)
 	{
 		p = f->head->next;
@@ -124,6 +123,38 @@ void	leave(t_farm *f, char *s)
 	else
 		write(2, s, ft_strlen(s));
 	exit(EXIT_FAILURE);
+}
+
+/*
+** COPIES f->buf IN f->map
+*/
+
+int		get_map(t_farm *f, char *buf)
+{
+	int		len;
+	int		i;
+	int		j;
+	char	*new;
+
+	len = ft_strlen(buf);
+	i = -1;
+	if (f->map)
+	{
+		if (!(new = malloc(sizeof(char) * ft_strlen(f->map) + len + 2)))
+			leave(f, ": malloc failure in get_map().\n");
+		while (f->map[++i])
+			new[i] = f->map[i];
+		new[i] = '\n';
+		ft_memdel((void **)&f->map);
+		f->map = new;
+	}
+	else if (!(f->map = malloc(sizeof(char) * len + 1)))
+		leave(f, ": malloc failure in get_map().\n");	
+	j = -1;
+	while (buf[++j])
+		f->map[++i] = buf[j];
+	f->map[++i] = 0;
+	return (1);
 }
 
 /*

@@ -55,23 +55,23 @@ void	leveling(t_farm *f, t_room *room, int lv)
 **                       WITH room_2
 */
 
-void	un_bind(t_farm *f, t_room *room, t_room *room_2, t_room **new_bond)
+void	un_bind(t_farm *f, t_room *room, t_room *room_2, t_room **tmp)
 {
-	if (new_bond)
+	if (f)
 	{
-		*new_bond = (room_2->epath) ? room_2->spath : NULL;
+		*tmp = (room_2->epath) ? room_2->spath : NULL;
 		room->epath = room_2;
 		if (room_2 != f->start)
 			room_2->spath = room;
-		if (*new_bond)
-			(*new_bond)->epath = NULL;
+		if (*tmp)
+			(*tmp)->epath = NULL;
 	}
 	else
 	{
-		room_2->spath = *new_bond;
+		room_2->spath = *tmp;
 		room->epath = NULL;
-		if (*new_bond)
-			(*new_bond)->epath = room_2;
+		if (*tmp)
+			(*tmp)->epath = room_2;
 	}
 }
 
@@ -79,6 +79,8 @@ void	un_bind(t_farm *f, t_room *room, t_room *room_2, t_room **new_bond)
 ** SEEKS A VALID ROOM NEXT TO room FOR path_builder()
 ** IF A VALID ROOM IS ALREADY TAKEN, TAKES IT IF THE PREVIOUS OWNER
 ** MANAGES TO BUILD A NEW PATH
+**
+**  && room->links[i]->spath != f->end
 */
 
 int		pathfind(t_farm *f, t_room *room, t_room *excl)
@@ -88,30 +90,43 @@ int		pathfind(t_farm *f, t_room *room, t_room *excl)
 
 	if (room == f->start)
 		return (1);
-	if (room == f->end)
+	if (!room || room == f->end)
 		return (0);
 	leveling(NULL, f->start, -1);
 	leveling(f, f->start, 0);
 	i = -1;
 	while (room->links[++i])
-		if (room->links[i]->level == room->level - 1 \
-			&& room->links[i] != excl && room->links[i]->spath != f->end)
+		if (room->links[i]->level == room->level - 1 && room->links[i] != excl)
 		{
 			un_bind(f, room, room->links[i], &tmp);
 			if (room->links[i]->epath)
 			{
-				if (pathfind(f, tmp, room->links[i]) == 1)
+				if (pathfind(f, tmp, room->links[i]))
 					return (1);
 			}
-			else if (pathfind(f, room->links[i], NULL) == 1)
+			else if (pathfind(f, room->links[i], NULL))
 				return (1);
-			un_bind(f, room, room->links[i], &tmp);
+			un_bind(NULL, room, room->links[i], &tmp);
 		}
 	return (0);
 }
 
 /*
 ** TRIES TO BUILD A PATH FROM END TO START
+**
+**	if (end_linki->spath)
+**		tmp = end_linki->spath;
+**		tmp->epath = NULL;
+**		end_linki->spath = f->end;
+**		if (pathfind(f, tmp, end_linki))
+**			f->ending = f->ending + 1;
+**		else
+**		{
+**			end_linki->spath = tmp;
+**			tmp->epath = end_linki;
+**		}
+**	si end_linki->spath alors je le link à end et j'efface l'ancienne route
+**	depuis end_linki
 */
 
 void	path_builder(t_farm *f, t_room *end_linki)
@@ -129,14 +144,12 @@ void	path_builder(t_farm *f, t_room *end_linki)
 	else
 	{
 		tmp = end_linki->spath;
-		tmp->epath = NULL;
 		end_linki->spath = f->end;
-		if (pathfind(f, tmp, end_linki))
-			f->ending = f->ending + 1;
-		else
+		while (tmp->spath)
 		{
-			end_linki->spath = tmp;
-			tmp->epath = end_linki;
+			tmp = tmp->spath;
+			tmp->epath->epath = NULL;
+			tmp->epath->spath = NULL;
 		}
 	}
 }
@@ -162,8 +175,8 @@ int		get_paths(t_farm *f)
 	{
 		if (f->end->links[i] == f->start)
 		{
-			f->end->links[i]->spath = f->end;
-			f->end->epath = f->end->links[i];
+			f->start->spath = f->end;
+			f->end->epath = f->start;
 			f->ending = f->ending + 1;
 		}
 		else

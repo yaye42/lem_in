@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "lem_in.h"
 
 /*
@@ -110,9 +109,9 @@ int		is_room(t_farm *f, char *buf)
 int		get_rooms(t_farm *f, char *buf)
 {
 	if (is_com(f, buf))
-		return (1);
+		return (get_map(f, buf));
 	else if (is_room(f, buf))
-		return (1);
+		return (get_map(f, buf));
 	if (f->starting == 1)
 		leave(f, ": no valid room after ##start command.\n");
 	else if (f->ending == 1)

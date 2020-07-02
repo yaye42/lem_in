@@ -14,6 +14,8 @@
 # define LEM_IN_H
 # define N_ROOMS_MAX 32767
 # define COMMENT 2
+# include <unistd.h>
+# include <stdlib.h>
 # include "libft.h"
 
 /*
@@ -38,6 +40,7 @@ typedef struct	s_room					//malloc
 typedef struct	s_farm
 {
 	char				*buf;			//malloc
+	char				*map;
 	int					n_ants;
 	int					n_rooms;	//taille des room->links[]
 	int					starting;	//utilisé que dans le parsing, peut être recyclé
@@ -56,6 +59,7 @@ void	release(t_farm *f);
 void	leave(t_farm *f, char *s);
 int		is_com(t_farm *f, char *buf);
 t_room	*is_saved_name(t_farm *f, char *buf, size_t n);
+int		get_map(t_farm *f, char *buf);
 int		get_rooms(t_farm *f, char *buf);
 void	get_farm(t_farm *f);
 void	leveling(t_farm *f, t_room *room, int lv);

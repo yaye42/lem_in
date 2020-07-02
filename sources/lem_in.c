@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include "lem_in.h"
 
 /*
@@ -159,6 +158,7 @@ int		main(void)
 	f.start = NULL;
 	f.end = NULL;
 	f.buf = NULL;
+	f.map = NULL;
 	get_farm(&f);
 	get_paths(&f);
 	set_ants(&f);

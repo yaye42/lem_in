@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
 #include "lem_in.h"
 
 /*
@@ -63,6 +61,7 @@ void	add_link(t_farm *f, char *buf)
 		i = i + 1;
 	r2->links[i] = r;
 	r2->n_links = r2->n_links + 1;
+	get_map(f, buf);
 }
 
 /*
@@ -135,6 +134,7 @@ void	check_farm(t_farm *f)
 		if (f->end->links[i]->level > 0)
 			f->end->n_links = f->end->n_links + 1;
 	}
+	ft_printf("%s\n\n", f->map);
 }
 
 /*
@@ -153,6 +153,7 @@ void	get_farm(t_farm *f)
 			ft_memdel((void **)&f->buf);
 		else
 			leave(f, ": no valid number for n_ants.\n");
+		get_map(f, f->buf);
 	}
 	ft_memdel((void **)&f->buf);
 	while ((get_next_line(0, &f->buf) > 0) && get_rooms(f, f->buf))
