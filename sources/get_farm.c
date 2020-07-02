@@ -112,14 +112,29 @@ int		is_link(t_farm *f, char *buf)
 
 void	check_farm(t_farm *f)
 {
-
+	int		i;
+	int		j;
+	t_room	*p;
 
 	leveling(NULL, f->start, -1);
 	leveling(f, f->start, 0);
 	if (f->end->level < 1)
 		leave(f, ": no solution.\n");
 	f->end->n_links = 0;
-	
+	i = -1;
+	while (f->end->links[++i])
+	{
+		j = i;
+		while (f->end->links[++j])
+			if (f->end->links[j]->level < f->end->links[i]->level)
+			{
+				p = f->end->links[i];
+				f->end->links[i] = f->end->links[j];
+				f->end->links[j] = p;
+			}
+		if (f->end->links[i]->level > 0)
+			f->end->n_links = f->end->n_links + 1;
+	}
 }
 
 /*
