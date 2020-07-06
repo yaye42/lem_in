@@ -1,28 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memset.c                                        :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yaye <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/02 14:32:02 by yaye              #+#    #+#             */
-/*   Updated: 2019/04/02 14:32:04 by yaye             ###   ########.fr       */
+/*   Created: 2020/07/06 11:34:11 by yaye              #+#    #+#             */
+/*   Updated: 2020/07/06 11:34:13 by yaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "lem_in.h"
 
-void	*ft_memset(void *b, int c, size_t len)
+int		main(void)
 {
-	size_t			i;
-	unsigned char	*temp;
+	t_farm	f;
+	int		n;
 
-	i = 0;
-	temp = (unsigned char *)b;
-	while (i < len && temp[i])
-	{
-		temp[i] = (unsigned char)c;
-		i++;
-	}
-	return (b);
+	f.n_ants = 0;
+	f.n_rooms = 0;
+	f.starting = 0;
+	f.ending = 0;
+	f.head = NULL;
+	f.tail = NULL;
+	f.start = NULL;
+	f.end = NULL;
+	f.buf = NULL;
+	f.map = NULL;
+	get_farm(&f);
+	get_paths(&f);
+	set_ants(&f);
+	n = 0;
+	lem_in(&f, n);
+	release(&f);
 }

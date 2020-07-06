@@ -51,6 +51,7 @@ void	add_link(t_farm *f, char *buf)
 	if (!r2->links)
 		r2->links = new_links(f);
 	i = 0;
+	get_map(f, buf);
 	while (r->links[i])
 		if (ft_strequ(r->links[i++]->name, r2->name))
 			return ;
@@ -61,7 +62,6 @@ void	add_link(t_farm *f, char *buf)
 		i = i + 1;
 	r2->links[i] = r;
 	r2->n_links = r2->n_links + 1;
-	get_map(f, buf);
 }
 
 /*
@@ -147,13 +147,13 @@ void	get_farm(t_farm *f)
 		leave(f, ": couldn't read.\n");
 	while (get_next_line(0, &f->buf) > 0)
 	{
-		if (ft_stoi(f->buf, &f->n_ants, 0) && f->n_ants > 0)
+		if (ft_stoi(f->buf, &f->n_ants, 0) && f->n_ants > 0 \
+			&& get_map(f, f->buf))
 			break ;
 		else if (is_com(f, f->buf) == COMMENT)
 			ft_memdel((void **)&f->buf);
 		else
 			leave(f, ": no valid number for n_ants.\n");
-		get_map(f, f->buf);
 	}
 	ft_memdel((void **)&f->buf);
 	while ((get_next_line(0, &f->buf) > 0) && get_rooms(f, f->buf))
@@ -163,7 +163,7 @@ void	get_farm(t_farm *f)
 	while ((get_next_line(0, &f->buf) > 0))
 	{
 		if (!is_com(f, f->buf) && !is_link(f, f->buf))
-			leave(f, ": bad link format.\n");
+			leave(f, ": bad link format or room does not exist.\n");
 		ft_memdel((void **)&f->buf);
 	}
 	ft_memdel((void **)&f->buf);

@@ -18,11 +18,9 @@ INCL = -Iincludes -Ilibft/includes
 
 LBFT = libft/libft.a
 
-LM_S =  get_paths.c get_farm.c get_rooms.c lem_in.c tools.c
-CM_S = 
+SRCS =  main.c lem_in.c get_paths.c get_farm.c get_rooms.c tools.c
 ODIR = ./objects/
-LM_O = $(patsubst %.c, $(ODIR)%.o, $(LM_S))
-CM_O = $(patsubst %.c, $(ODIR)%.o, $(CM_S))
+OBJS = $(patsubst %.c, $(ODIR)%.o, $(SRCS))
 
 HEAD = includes/lem_in.h
 
@@ -30,22 +28,14 @@ vpath %.c ./sources/
 
 all : $(ODIR) $(NAME)
 
-$(NAME) : $(LBFT) $(CM_O) $(LM_O)
-	$(CC) $(CFLAGS) -o $@ $(LM_O) $(CM_O) $(INCL) -Llibft/ -lft
+$(NAME) : $(LBFT) $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(INCL) -Llibft/ -lft
 	@printf "\033[1;32m%35s	COMPILED\033[0m\n" "$(NAME)"
 
 $(LBFT) : FORCE
 	@$(MAKE) -C libft
 
-$(CM_O) : $(ODIR)%.o: %.c $(HEAD)
-	$(CC) $(CFLAGS) $(INCL) -c $< -o $@
-	@printf "\033[32m%35s	COMPILED\033[0m\n" "$@"
-
-$(LM_O) : $(ODIR)%.o: %.c $(HEAD)
-	$(CC) $(CFLAGS) $(INCL) -c $< -o $@
-	@printf "\033[32m%35s	COMPILED\033[0m\n" "$@"
-
-$(PS_O) : $(ODIR)%.o: %.c $(HEAD)
+$(OBJS) : $(ODIR)%.o: %.c $(HEAD)
 	$(CC) $(CFLAGS) $(INCL) -c $< -o $@
 	@printf "\033[32m%35s	COMPILED\033[0m\n" "$@"
 
@@ -55,10 +45,7 @@ $(ODIR) :
 FORCE :
 
 clean :
-	$(RM) $(CM_O)
-	$(RM) $(LM_O)
-	$(RM) $(PS_O)
-	$(RM) $(ARG)
+	$(RM) $(OBJS)
 	$(RM) -R $(ODIR)
 	$(MAKE) clean -C libft
 

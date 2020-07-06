@@ -19,7 +19,7 @@
 ** REMOVES AS MUCH ANTS FROM TOTAL n_ants
 */
 
-void	disp_ants_ser(t_farm *f, int j, int k, int *ants)
+void	dispantser(t_farm *f, int j, int k, int *ants)
 {
 	while (++k < j && *ants > 0 && f->start->links[k])
 	{
@@ -84,84 +84,54 @@ void	set_ants(t_farm *f)
 	{
 		while (f->start->links[j - 1]->len + f->start->links[j - 1]->ants \
 			< f->start->links[j]->len && ants > 0)
-			disp_ants_ser(f, j, i - 1, &ants);
+			dispantser(f, j, i - 1, &ants);
 	}
 	while (ants > 0)
-		disp_ants_ser(f, j, i - 1, &ants);
+		dispantser(f, j, i - 1, &ants);
 	while (f->start->links[i] && !(f->start->links[i]->len = 0))
 		f->start->links[i++]->level = 0;
 	if (f->start->spath && (f->start->ants = f->end->ants))
 		f->end->ants = 0;
 }
 
-int		send_ant(t_room *room, int *k, int ret)
+int		send_ant(t_room *room, int *k, int n, int ret)
 {
 	room->ants = room->ants + 1;
-	room->len = room->len + 1;
+	room->len = n;
 	*k = (*k != 0) ? write(1, " ", 1) : 1;
-	ft_printf("L%d-%s", room->len, room->name);
+	ft_printf("L%d-%s", n, room->name);
 	return (ret);
 }
 
-void	lem_in(t_farm *f)
-{
-	int		i;
-	int		k;
-	t_room	*q;
+/*
+** DURING PATHING, room->len IS THE ANT'S NUMBER
+*/
 
-	if (f->n_ants == f->end->len)
+void	lem_in(t_farm *f, int n)
+{
+	int		k;
+	int		i;
+	t_room	*p;
+
+	if (f->end->ants == f->n_ants)
 		return ;
-	i = -1;
 	k = 0;
-	while ((q = f->end->links[++i]) != NULL)
+	i = -1;
+	while ((p = f->end->links[++i]))
 	{
-		if (q == f->start)
+		if (p == f->start && f->start->ants > 0)
+			p->ants -= send_ant(p->spath, &k, ++n, 1);
+		while (p->epath && p->epath != f->start)
 		{
-			send_ant(q->spath, &k, 1);
-			q->len = q->len + 1;
-			q->ants = q->ants - 1;
+			p->ants -= (p->ants) ? send_ant(p->spath, &k, p->len, 1) : 0;
+			p = p->epath;
 		}
-		while (q->epath && q->epath != f->start)
-		{
-			if (q->ants)
-				q->ants = q->ants - send_ant(q->spath, &k, 1);
-			q = q->epath;
-		}
-		if (q->epath == f->start)
-		{
-			if (q->ants)
-			{
-				q->level = (q->level) ? send_ant(q->spath, &k, 1) : 1;
-				q->len = q->len + 1;
-				q->ants = q->ants - 1;
-				k = (k != 0) ? write(1, " ", 1) : 1;
-				ft_printf("L%d-%s", q->len, q->name);
-			}
-			else if (q->ants == 0 && q->level == 1)
-				q->level = send_ant(q->spath, &k, 0);
-		}
+		if (p->epath == f->start && p->ants \
+			&& (p->level = (p->level) ? send_ant(p->spath, &k, p->len, 1) : 1))
+			p->ants -= send_ant(p, &k, ++n, 2);
+		else if (p->epath == f->start && p->ants == 0 && p->level == 1)
+			p->level = send_ant(p->spath, &k, p->len, 0);
 	}
 	write(1, "\n", 1);
-	lem_in(f);
-}
-
-int		main(void)
-{
-	t_farm	f;
-
-	f.n_ants = 0;
-	f.n_rooms = 0;
-	f.starting = 0;
-	f.ending = 0;
-	f.head = NULL;
-	f.tail = NULL;
-	f.start = NULL;
-	f.end = NULL;
-	f.buf = NULL;
-	f.map = NULL;
-	get_farm(&f);
-	get_paths(&f);
-	set_ants(&f);
-	lem_in(&f);
-	release(&f);
+	lem_in(f, n);
 }

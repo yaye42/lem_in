@@ -22,16 +22,16 @@
 ** >---------------------------- LEM_IN STRUCTURES ---------------------------<
 */
 
-typedef struct	s_room					//malloc
+typedef struct	s_room
 {
-	char				*name;			//malloc
+	char				*name;
 	int					x;
 	int					y;
-	int					level;			//set à 0
+	int					level;
 	int					n_links;
 	int					len;
 	int					ants;
-	struct s_room		**links;		//malloc
+	struct s_room		**links;
 	struct s_room		*epath;
 	struct s_room		*spath;
 	struct s_room		*next;
@@ -39,35 +39,32 @@ typedef struct	s_room					//malloc
 
 typedef struct	s_farm
 {
-	char				*buf;			//malloc
+	char				*buf;
 	char				*map;
 	int					n_ants;
-	int					n_rooms;	//taille des room->links[]
-	int					starting;	//utilisé que dans le parsing, peut être recyclé
-	int					ending;		//devient le nombre de paths trouvés
-	t_room				*head;  	//start of the list
-	t_room				*tail; 		//last of the list peut être recyclé
-	t_room				*start;     //starting room
-	t_room				*end;     	//ending room 
+	int					n_rooms;
+	int					starting;
+	int					ending;
+	t_room				*head;
+	t_room				*tail;
+	t_room				*start;
+	t_room				*end;
 }				t_farm;
 
 /*
 ** >-------------------------------- FUNCTIONS -------------------------------<
 */
 
-void	release(t_farm *f);
-void	leave(t_farm *f, char *s);
-int		is_com(t_farm *f, char *buf);
-t_room	*is_saved_name(t_farm *f, char *buf, size_t n);
-int		get_map(t_farm *f, char *buf);
-int		get_rooms(t_farm *f, char *buf);
-void	get_farm(t_farm *f);
-void	leveling(t_farm *f, t_room *room, int lv);
-int		get_paths(t_farm *f);
+void			release(t_farm *f);
+void			leave(t_farm *f, char *s);
+int				is_com(t_farm *f, char *buf);
+t_room			*is_saved_name(t_farm *f, char *buf, size_t n);
+int				get_map(t_farm *f, char *buf);
+int				get_rooms(t_farm *f, char *buf);
+void			get_farm(t_farm *f);
+void			leveling(t_farm *f, t_room *room, int lv);
+int				get_paths(t_farm *f);
+void			set_ants(t_farm *f);
+void			lem_in(t_farm *f, int n);
 
-void	print_rooms(t_farm *f, char *s);
-void	pf_room_name(t_farm *f, char *s);
-void	print_paths(t_farm *f);
-void	show_farm(t_farm *f);
-void	show_links(t_room *r);
 #endif

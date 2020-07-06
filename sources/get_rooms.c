@@ -79,6 +79,7 @@ void	add_room(t_farm *f, char *buf)
 	if (f->n_rooms == N_ROOMS_MAX)
 		leave(f, ": reached N_ROOMS_MAX (edit value in lem_in.h).\n");
 	f->n_rooms = f->n_rooms + 1;
+	get_map(f, buf);
 }
 
 int		is_room(t_farm *f, char *buf)
@@ -109,14 +110,14 @@ int		is_room(t_farm *f, char *buf)
 int		get_rooms(t_farm *f, char *buf)
 {
 	if (is_com(f, buf))
-		return (get_map(f, buf));
+		return (1);
 	else if (is_room(f, buf))
-		return (get_map(f, buf));
+		return (1);
 	if (f->starting == 1)
 		leave(f, ": no valid room after ##start command.\n");
 	else if (f->ending == 1)
 		leave(f, ": no valid room after ##end command.\n");
 	if (f->starting != 2 || f->ending != 2)
-		leave(f, ": no starting and/or ending room.\n");
+		leave(f, ": no starting or ending room after last valid room.\n");
 	return (0);
 }
