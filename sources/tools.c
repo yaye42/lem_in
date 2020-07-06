@@ -59,28 +59,28 @@ void	leave(t_farm *f, char *s)
 
 int		get_map(t_farm *f, char *buf)
 {
-	int		len;
-	int		i;
-	int		j;
-	char	*new;
+	int			i;
+	int			j;
+	char		*new;
 
-	len = ft_strlen(buf);
-	i = -1;
-	if (f->map)
+	if (!f->map)
+		leave(f, "\n");
+	i = ft_strlen(f->map);
+	if (((i % MSIZE) + (j = ft_strlen(buf) + 2)) >= MSIZE)
 	{
-		if (!(new = malloc(sizeof(char) * ft_strlen(f->map) + len + 2)))
+		if (!(new = malloc(sizeof(char) * MSIZE * (((i + j) / MSIZE) + 1))))
 			leave(f, ": malloc failure in get_map().\n");
+		i = -1;
 		while (f->map[++i])
 			new[i] = f->map[i];
-		new[i] = '\n';
+		ft_memset(f->map, 0, ft_strlen(f->map));
 		ft_memdel((void **)&f->map);
 		f->map = new;
 	}
-	else if (!(f->map = malloc(sizeof(char) * len + 1)))
-		leave(f, ": malloc failure in get_map().\n");
 	j = -1;
 	while (buf[++j])
-		f->map[++i] = buf[j];
+		f->map[i++] = buf[j];
+	f->map[i] = '\n';
 	f->map[++i] = 0;
 	return (1);
 }

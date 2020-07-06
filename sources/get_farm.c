@@ -134,7 +134,7 @@ void	check_farm(t_farm *f)
 		if (f->end->links[i]->level > 0)
 			f->end->n_links = f->end->n_links + 1;
 	}
-	ft_printf("%s\n\n", f->map);
+	ft_printf("%s\n", f->map);
 }
 
 /*

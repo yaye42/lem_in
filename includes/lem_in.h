@@ -13,6 +13,7 @@
 #ifndef LEM_IN_H
 # define LEM_IN_H
 # define N_ROOMS_MAX 32767
+# define MSIZE 16384
 # define COMMENT 2
 # include <unistd.h>
 # include <stdlib.h>

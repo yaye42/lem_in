@@ -26,7 +26,9 @@ int		main(void)
 	f.start = NULL;
 	f.end = NULL;
 	f.buf = NULL;
-	f.map = NULL;
+	if (!(f.map = malloc(sizeof(char) * MSIZE)))
+		return (0);
+	ft_memset(f.map, 0, MSIZE);
 	get_farm(&f);
 	get_paths(&f);
 	set_ants(&f);

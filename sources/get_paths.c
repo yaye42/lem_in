@@ -79,8 +79,6 @@ void	un_bind(t_farm *f, t_room *room, t_room *room_2, t_room **tmp)
 ** SEEKS A VALID ROOM NEXT TO room FOR path_builder()
 ** IF A VALID ROOM IS ALREADY TAKEN, TAKES IT IF THE PREVIOUS OWNER
 ** MANAGES TO BUILD A NEW PATH
-**
-**  && room->links[i]->spath != f->end
 */
 
 int		pathfind(t_farm *f, t_room *room, t_room *excl)
@@ -113,20 +111,6 @@ int		pathfind(t_farm *f, t_room *room, t_room *excl)
 
 /*
 ** TRIES TO BUILD A PATH FROM END TO START
-**
-**	if (end_linki->spath)
-**		tmp = end_linki->spath;
-**		tmp->epath = NULL;
-**		end_linki->spath = f->end;
-**		if (pathfind(f, tmp, end_linki))
-**			f->ending = f->ending + 1;
-**		else
-**		{
-**			end_linki->spath = tmp;
-**			tmp->epath = end_linki;
-**		}
-**	si end_linki->spath alors je le link à end et j'efface l'ancienne route
-**	depuis end_linki
 */
 
 void	path_builder(t_farm *f, t_room *end_linki)
